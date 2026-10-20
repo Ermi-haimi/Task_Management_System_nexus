@@ -7,6 +7,8 @@ const compFilterBtn = document.getElementById("comp-filter");
 const compStat = document.getElementById("completed-task-stat");
 const allStat = document.getElementById("all-task-stat");
 const activeStat = document.getElementById("active-task-stat");
+const inputError = document.getElementById("input-error");
+const taskPriority = document.getElementById("task-priority");
 
 let selectedFilter = "all";
 
@@ -48,6 +50,10 @@ function showTasks() {
     let deleteBtn = document.createElement("button");
     let checkBox = document.createElement("input");
     let editBtn = document.createElement("button");
+    let priorityP = document.createElement("span");
+
+    priorityP.textContent = task.priority;
+    priorityP.classList.add(`priority-${task.priority || "medium"}`);
 
     taskP.textContent = task.taskText;
     editBtn.textContent = "Edit";
@@ -104,6 +110,7 @@ function showTasks() {
     checkBox.checked = task.comp;
     hTaskLi.appendChild(checkBox);
     hTaskLi.appendChild(taskP);
+    hTaskLi.appendChild(priorityP);
     hTaskLi.appendChild(editBtn);
     hTaskLi.appendChild(deleteBtn);
 
@@ -154,14 +161,18 @@ function statKeeper() {
 
 function addTask() {
   const task = newTaskInput.value.trim();
-  if (task !== "") {
+  if (task.length !== 0) {
+    inputError.textContent = "";
     tasks.push({
       id: crypto.randomUUID(),
       taskText: task,
       comp: false,
+      priority: taskPriority.value,
     });
     saveTasks();
     newTaskInput.value = "";
     showTasks();
+  } else {
+    inputError.textContent = "Please enter a task";
   }
 }

@@ -14,6 +14,13 @@
       <div class="new-task">
         <label for="newtask-input">add a task</label><br />
         <input id="newtask-input" type="text" placeholder="add task here" />
+        <label for="task-priority">Priority</label>
+        <select id="task-priority">
+          <option value="low">Low</option>
+          <option value="medium" selected>Medium</option>
+          <option value="high">High</option>
+        </select>
+        <p id="input-error"></p>
         <button id="add-task-btn">Add</button>
       </div>
       <div class="filter-container">
