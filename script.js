@@ -9,6 +9,7 @@ const allStat = document.getElementById("all-task-stat");
 const activeStat = document.getElementById("active-task-stat");
 const inputError = document.getElementById("input-error");
 const taskPriority = document.getElementById("task-priority");
+const searchInput = document.getElementById("search-input");
 
 let selectedFilter = "all";
 
@@ -25,6 +26,8 @@ newTaskInput.addEventListener("keydown", (e) => {
     addTask();
   }
 });
+
+searchInput.addEventListener("input", showTasks);
 
 function showTasks() {
   taskList.innerHTML = "";
@@ -43,6 +46,12 @@ function showTasks() {
   } else {
     filteredTasks = tasks;
   }
+
+  const searchTerm = searchInput.value.trim().toLowerCase();
+
+  filteredTasks = filteredTasks.filter((filteredTask) => {
+    return filteredTask.taskText.toLowerCase().includes(searchTerm);
+  });
 
   filteredTasks.forEach((task) => {
     let hTaskLi = document.createElement("li");
