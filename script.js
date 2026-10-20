@@ -17,13 +17,10 @@ let activeTasks = 0;
 let tasks = JSON.parse(localStorage.getItem("savedTasks")) || [];
 showTasks();
 
-addBtn.addEventListener("click", () => {
-  const task = newTaskInput.value.trim();
-  if (task !== "") {
-    tasks.push({ taskText: task, comp: false });
-    saveTasks();
-    newTaskInput.value = "";
-    showTasks();
+addBtn.addEventListener("click", addTask);
+newTaskInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    addTask();
   }
 });
 
@@ -50,20 +47,68 @@ function showTasks() {
     let taskP = document.createElement("p");
     let deleteBtn = document.createElement("button");
     let checkBox = document.createElement("input");
+    let editBtn = document.createElement("button");
+
     taskP.textContent = task.taskText;
+    editBtn.textContent = "Edit";
     deleteBtn.textContent = "Delete";
+
     deleteBtn.addEventListener("click", () => {
-      tasks = tasks.filter((elem) => elem !== task);
+      tasks = tasks.filter((elem) => elem.id !== task.id);
       saveTasks();
       showTasks();
+    });
+
+    editBtn.addEventListener("click", () => {
+      const editInput = document.createElement("input");
+      const saveBtn = document.createElement("button");
+      const cancelBtn = document.createElement("button");
+
+      saveBtn.textContent = "Save";
+      cancelBtn.textContent = "Cancel";
+
+      function saveUpdate() {
+        const updatedTask = editInput.value.trim();
+        if (updatedTask !== "") {
+          task.taskText = updatedTask;
+          saveTasks();
+          showTasks();
+        }
+      }
+
+      saveBtn.addEventListener("click", () => {
+        saveUpdate();
+      });
+      cancelBtn.addEventListener("click", () => {
+        showTasks();
+      });
+
+      editInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          saveUpdate();
+        } else if (e.key === "Escape") {
+          showTasks();
+        }
+      });
+
+      editInput.type = "text";
+      editInput.value = task.taskText;
+      hTaskLi.innerHTML = "";
+      hTaskLi.appendChild(editInput);
+      hTaskLi.appendChild(saveBtn);
+      hTaskLi.appendChild(cancelBtn);
+      editInput.focus();
     });
 
     checkBox.type = "checkbox";
     checkBox.checked = task.comp;
     hTaskLi.appendChild(checkBox);
     hTaskLi.appendChild(taskP);
+    hTaskLi.appendChild(editBtn);
     hTaskLi.appendChild(deleteBtn);
+
     taskP.classList.toggle("completed", task.comp);
+
     checkBox.addEventListener("change", () => {
       task.comp = !task.comp;
       saveTasks();
@@ -102,19 +147,21 @@ allFilterBtn.addEventListener("click", () => {
 });
 
 function statKeeper() {
-  let tot = tasks.length;
-  completedTasks = 0;
-  activeTasks = 0;
-  for (let i = 0; i < tot; i++) {
-    if (tasks[i].comp) {
-      completedTasks += 1;
-    } else {
-      activeTasks += 1;
-    }
-  }
-  totalTasks = tot;
+  allStat.textContent = tasks.length;
+  compStat.textContent = tasks.filter((task) => task.comp).length;
+  activeStat.textContent = tasks.filter((task) => !task.comp).length;
+}
 
-  allStat.textContent = totalTasks;
-  compStat.textContent = completedTasks;
-  activeStat.textContent = activeTasks;
+function addTask() {
+  const task = newTaskInput.value.trim();
+  if (task !== "") {
+    tasks.push({
+      id: crypto.randomUUID(),
+      taskText: task,
+      comp: false,
+    });
+    saveTasks();
+    newTaskInput.value = "";
+    showTasks();
+  }
 }
