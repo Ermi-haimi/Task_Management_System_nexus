@@ -4,8 +4,15 @@ const taskList = document.getElementById("task-list");
 const allFilterBtn = document.getElementById("all-filter");
 const activeFilterBtn = document.getElementById("active-filter");
 const compFilterBtn = document.getElementById("comp-filter");
+const compStat = document.getElementById("completed-task-stat");
+const allStat = document.getElementById("all-task-stat");
+const activeStat = document.getElementById("active-task-stat");
 
 let selectedFilter = "all";
+
+let totalTasks = 0;
+let completedTasks = 0;
+let activeTasks = 0;
 
 let tasks = JSON.parse(localStorage.getItem("savedTasks")) || [];
 showTasks();
@@ -22,6 +29,7 @@ addBtn.addEventListener("click", () => {
 
 function showTasks() {
   taskList.innerHTML = "";
+  statKeeper();
 
   let filteredTasks;
 
@@ -50,7 +58,7 @@ function showTasks() {
       showTasks();
     });
 
-    checkBox.type = "checkBox";
+    checkBox.type = "checkbox";
     checkBox.checked = task.comp;
     hTaskLi.appendChild(checkBox);
     hTaskLi.appendChild(taskP);
@@ -58,8 +66,6 @@ function showTasks() {
     taskP.classList.toggle("completed", task.comp);
     checkBox.addEventListener("change", () => {
       task.comp = !task.comp;
-      taskP.classList.toggle("completed", task.comp);
-      checkBox.checked = task.comp;
       saveTasks();
       showTasks();
     });
@@ -94,3 +100,21 @@ allFilterBtn.addEventListener("click", () => {
   selectedFilter = "all";
   showTasks();
 });
+
+function statKeeper() {
+  let tot = tasks.length;
+  completedTasks = 0;
+  activeTasks = 0;
+  for (let i = 0; i < tot; i++) {
+    if (tasks[i].comp) {
+      completedTasks += 1;
+    } else {
+      activeTasks += 1;
+    }
+  }
+  totalTasks = tot;
+
+  allStat.textContent = totalTasks;
+  compStat.textContent = completedTasks;
+  activeStat.textContent = activeTasks;
+}
